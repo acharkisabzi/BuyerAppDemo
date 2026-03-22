@@ -12,11 +12,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
+import com.example.buyerappdemo.R
 import com.example.buyerappdemo.models.ProductModel
 import com.example.buyerappdemo.supabase.supabase
 import io.github.jan.supabase.auth.auth
@@ -50,7 +52,7 @@ fun ProductFeedScreen(navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("All Products") },
+                title = { Text(stringResource(R.string.title_all_products)) },
                 actions = {
                     TextButton(onClick = {
                         scope.launch {
@@ -60,7 +62,7 @@ fun ProductFeedScreen(navController: NavController) {
                             }
                         }
                     }) {
-                        Text("Sign out")
+                        Text(stringResource(R.string.btn_sign_out))
                     }
                 }
             )
@@ -84,7 +86,11 @@ fun ProductFeedScreen(navController: NavController) {
                     contentAlignment = Alignment.Center
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("No products yet", fontSize = 18.sp, fontWeight = FontWeight.Medium)
+                        Text(
+                            text = stringResource(R.string.msg_no_products),
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Medium
+                        )
                     }
                 }
             }
@@ -129,12 +135,12 @@ fun ProductCard(product: ProductModel) {
                     maxLines = 1
                 )
                 Text(
-                    text = "₹${product.price.toInt()}",
+                    text = stringResource(R.string.price_format, product.price.toInt()),
                     color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = if (product.inStock) "In stock" else "Out of stock",
+                    text = if (product.inStock) stringResource(R.string.status_in_stock) else stringResource(R.string.status_out_of_stock),
                     fontSize = 11.sp,
                     color = if (product.inStock)
                         MaterialTheme.colorScheme.tertiary

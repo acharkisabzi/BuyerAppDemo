@@ -6,12 +6,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.buyerappdemo.R
 import com.example.buyerappdemo.models.UserModel
 import com.example.buyerappdemo.supabase.supabase
 import io.github.jan.supabase.auth.auth
@@ -31,6 +33,7 @@ fun LoginScreen(navController: NavController) {
     var isSignUp by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
+    val defaultErrorMessage = stringResource(R.string.error_default)
 
     Column(
         modifier = Modifier
@@ -40,12 +43,12 @@ fun LoginScreen(navController: NavController) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "LocalBuyer",
+            text = stringResource(R.string.login_title),
             fontSize = 32.sp,
             fontWeight = FontWeight.Bold
         )
         Text(
-            text = "Buyer App",
+            text = stringResource(R.string.login_subtitle),
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 
@@ -56,14 +59,14 @@ fun LoginScreen(navController: NavController) {
             OutlinedTextField(
                 value = nameInput,
                 onValueChange = { nameInput = it },
-                label = { Text("Name") },
+                label = { Text(stringResource(R.string.label_name)) },
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(12.dp))
             OutlinedTextField(
                 value = areaInput,
                 onValueChange = { areaInput = it },
-                label = { Text("Area (e.g. Hazratganj)") },
+                label = { Text(stringResource(R.string.label_area)) },
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(12.dp))
@@ -72,7 +75,7 @@ fun LoginScreen(navController: NavController) {
         OutlinedTextField(
             value = emailInput,
             onValueChange = { emailInput = it },
-            label = { Text("Email") },
+            label = { Text(stringResource(R.string.label_email)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             modifier = Modifier.fillMaxWidth()
         )
@@ -81,7 +84,7 @@ fun LoginScreen(navController: NavController) {
         OutlinedTextField(
             value = phoneInput,
             onValueChange = { phoneInput = it },
-            label = { Text("Phone") },
+            label = { Text(stringResource(R.string.label_phone)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
             modifier = Modifier.fillMaxWidth()
         )
@@ -90,7 +93,7 @@ fun LoginScreen(navController: NavController) {
         OutlinedTextField(
             value = passwordInput,
             onValueChange = { passwordInput = it },
-            label = { Text("Password") },
+            label = { Text(stringResource(R.string.label_password)) },
             visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             modifier = Modifier.fillMaxWidth()
@@ -140,7 +143,7 @@ fun LoginScreen(navController: NavController) {
                             popUpTo("login") { inclusive = true }
                         }
                     } catch (e: Exception) {
-                        errorMessage = e.message ?: "Something went wrong"
+                        errorMessage = e.message ?: defaultErrorMessage
                     }
                     isLoading = false
                 }
@@ -154,14 +157,14 @@ fun LoginScreen(navController: NavController) {
                     color = MaterialTheme.colorScheme.onPrimary
                 )
             } else {
-                Text(if (isSignUp) "Create account" else "Sign in")
+                Text(if (isSignUp) stringResource(R.string.btn_create_account) else stringResource(R.string.btn_sign_in))
             }
         }
 
         Spacer(modifier = Modifier.height(12.dp))
 
         TextButton(onClick = { isSignUp = !isSignUp }) {
-            Text(if (isSignUp) "Already have an account? Sign in" else "First time? Create account")
+            Text(if (isSignUp) stringResource(R.string.msg_already_have_account) else stringResource(R.string.msg_first_time))
         }
     }
 }
