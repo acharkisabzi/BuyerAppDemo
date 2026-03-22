@@ -11,6 +11,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.buyerappdemo.screens.LoginScreen
+import com.example.buyerappdemo.screens.ProductFeedScreen
 import com.example.buyerappdemo.ui.theme.BuyerAppDemoTheme
 
 class MainActivity : ComponentActivity() {
@@ -19,29 +24,33 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             BuyerAppDemoTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                AppScreen(modifier = Modifier.fillMaxSize())
             }
         }
     }
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
+fun AppScreen(modifier: Modifier) {
+    val navController = rememberNavController()
+
+    NavHost(
+        navController = navController,
+        startDestination = "login"
+    ) {
+        composable(route = "login") {
+            LoginScreen(navController = navController)
+        }
+        composable(route = "productFeed") {
+            ProductFeedScreen(navController = navController)
+        }
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
     BuyerAppDemoTheme {
-        Greeting("Android")
+        AppScreen(modifier = Modifier.fillMaxSize())
     }
 }
