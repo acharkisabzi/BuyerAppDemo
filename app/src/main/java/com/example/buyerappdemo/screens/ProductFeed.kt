@@ -1,14 +1,21 @@
 package com.example.buyerappdemo.screens
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.FiniteAnimationSpec
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import com.example.buyerappdemo.ui.theme.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -20,46 +27,33 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.example.buyerappdemo.R
 import com.example.buyerappdemo.models.ProductModel
-import com.example.buyerappdemo.supabase.supabase
-import io.github.jan.supabase.auth.auth
-import io.github.jan.supabase.postgrest.postgrest
-import io.github.jan.supabase.postgrest.query.Order
-import kotlinx.coroutines.launch
+import com.example.buyerappdemo.viewmodels.AuthViewModel
+import com.example.buyerappdemo.viewmodels.ProductFeedViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductFeedScreen(navController: NavController) {
-    val scope = rememberCoroutineScope()
-    var products by remember { mutableStateOf<List<ProductModel>>(emptyList()) }
-    var isLoading by remember { mutableStateOf(true) }
-
-    // Load products when screen opens
-    LaunchedEffect(Unit) {
-        try {
-            val result = supabase.postgrest["products"]
-                .select {
-                    order("price", Order.ASCENDING)
-                }
-            products = result.decodeList<ProductModel>()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        isLoading = false
-    }
+    val authViewModel: AuthViewModel = viewModel()
+    val productFeedViewModel: ProductFeedViewModel = viewModel()
+    val productFeedUiState by productFeedViewModel.uiState.collectAsState()
+    var expanded: Boolean by remember { mutableStateOf(false) }
 
     Scaffold(
         containerColor = DSurface,
+        modifier = Modifier.background(DSecondaryContainer)
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(DSurface)
+                .background(DSecondaryContainer)
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
         ) {
@@ -68,10 +62,40 @@ fun ProductFeedScreen(navController: NavController) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 24.dp, vertical = 20.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                    .padding( vertical = 17.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+
+                // Subtle sign-out link
+                TextButton(
+                    onClick = {
+                        authViewModel.signOut {
+                            navController.navigate("login") {
+                                popUpTo("productFeed") { inclusive = true }
+                            }
+                        }
+                    },
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(height = 30.dp, width = 70.dp)
+                            .clip(shape = RoundedCornerShape(100.dp))
+                            .background(ADAtErrContainer),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = stringResource(R.string.btn_sign_out),
+                            modifier = Modifier,
+                            color = DError,
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+
+                }
+
                 Text(
                     text = "BuyerAppDemo",
                     fontSize = 22.sp,
@@ -79,30 +103,60 @@ fun ProductFeedScreen(navController: NavController) {
                     color = DOnSurface,
                     letterSpacing = (-0.5).sp
                 )
-                // Subtle sign-out link
-                TextButton(
-                    onClick = {
-                        scope.launch {
-                            supabase.auth.signOut()
-                            navController.navigate("login") {
-                                popUpTo("feed") { inclusive = true }
-                            }
-                        }
-                    },
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp)
-                ) {
-                    Text(
-                        text = stringResource(R.string.btn_sign_out),
-                        color = DOutline,
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.Medium
+
+                IconButton(onClick = { expanded = !expanded }) {
+                    Icon(
+                        Icons.Default.MoreVert,
+                        contentDescription = "More options",
                     )
+
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false },
+                        modifier = Modifier.animateContentSize(
+                            animationSpec = spring(dampingRatio = Spring.DampingRatioHighBouncy, stiffness = Spring.StiffnessLow)
+                        )
+                        ) {
+                        Text(
+                            text = "Sort by",
+                            fontSize = 15.sp,
+                            modifier = Modifier.padding(start = 10.dp)
+                        )
+                        DropdownMenuItem(
+                            text = { Text(text = "Price") },
+                            onClick = {
+                                productFeedViewModel.setSortFilter("price")
+                                expanded = false
+                            },
+                        )
+                        DropdownMenuItem(
+                            text = { Text(text = "Area") },
+                            onClick = {
+                                productFeedViewModel.setSortFilter("area")
+                                expanded = false
+                            },
+                        )
+                        DropdownMenuItem(
+                            text = { Text(text = "Shop name") },
+                            onClick = {
+                                productFeedViewModel.setSortFilter("shop_name")
+                                expanded = false
+                            },
+                        )
+                        DropdownMenuItem(
+                            text = { Text(text = "Product name") },
+                            onClick = {
+                                productFeedViewModel.setSortFilter("name")
+                                expanded = false
+                            },
+                        )
+                    }
                 }
             }
             // ── Collection Grid ───────────────────────────────────────────────
             CollectionSection(
-                products = products,
-                isLoading = isLoading,
+                products = productFeedUiState.products,
+                isLoading = productFeedUiState.isLoading,
                 navController = navController
             )
 

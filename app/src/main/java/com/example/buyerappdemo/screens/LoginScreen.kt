@@ -12,18 +12,15 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.buyerappdemo.R
-import com.example.buyerappdemo.models.UserModel
-import com.example.buyerappdemo.supabase.supabase
-import io.github.jan.supabase.auth.auth
-import io.github.jan.supabase.auth.providers.builtin.Email
-import io.github.jan.supabase.postgrest.postgrest
-import kotlinx.coroutines.launch
+import com.example.buyerappdemo.viewmodels.AuthViewModel
 
 @Composable
 fun LoginScreen(navController: NavController) {
-    val scope = rememberCoroutineScope()
+    val authViewModel: AuthViewModel = viewModel()
+    val authUiState by authViewModel.uiState.collectAsState()
 
     var emailInput by remember { mutableStateOf("") }
     var phoneInput by remember { mutableStateOf("") }
@@ -31,9 +28,6 @@ fun LoginScreen(navController: NavController) {
     var nameInput by remember { mutableStateOf("") }
     var areaInput by remember { mutableStateOf("") }
     var isSignUp by remember { mutableStateOf(false) }
-    var isLoading by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf("") }
-    val defaultErrorMessage = stringResource(R.string.error_default)
 
     Column(
         modifier = Modifier
@@ -60,14 +54,16 @@ fun LoginScreen(navController: NavController) {
                 value = nameInput,
                 onValueChange = { nameInput = it },
                 label = { Text(stringResource(R.string.label_name)) },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !authUiState.isLoading
             )
             Spacer(modifier = Modifier.height(12.dp))
             OutlinedTextField(
                 value = areaInput,
                 onValueChange = { areaInput = it },
                 label = { Text(stringResource(R.string.label_area)) },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !authUiState.isLoading
             )
             Spacer(modifier = Modifier.height(12.dp))
         }
@@ -77,7 +73,8 @@ fun LoginScreen(navController: NavController) {
             onValueChange = { emailInput = it },
             label = { Text(stringResource(R.string.label_email)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = !authUiState.isLoading
         )
         Spacer(modifier = Modifier.height(12.dp))
 
@@ -86,7 +83,8 @@ fun LoginScreen(navController: NavController) {
             onValueChange = { phoneInput = it },
             label = { Text(stringResource(R.string.label_phone)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = !authUiState.isLoading
         )
         Spacer(modifier = Modifier.height(12.dp))
 
@@ -96,14 +94,15 @@ fun LoginScreen(navController: NavController) {
             label = { Text(stringResource(R.string.label_password)) },
             visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = !authUiState.isLoading
         )
         Spacer(modifier = Modifier.height(8.dp))
 
         // Error message
-        if (errorMessage.isNotEmpty()) {
+        if (authUiState.errorMessage.isNotEmpty()) {
             Text(
-                text = errorMessage,
+                text = authUiState.errorMessage,
                 color = MaterialTheme.colorScheme.error,
                 fontSize = 13.sp
             )
@@ -112,46 +111,35 @@ fun LoginScreen(navController: NavController) {
 
         Button(
             onClick = {
-                scope.launch {
-                    isLoading = true
-                    errorMessage = ""
-                    try {
-                        if (isSignUp) {
-                            // Sign up
-                            val result = supabase.auth.signUpWith(Email) {
-                                email = emailInput
-                                password = passwordInput
-                            }
-                            // Save shop profile
-                            supabase.postgrest["buyers"].insert(
-                                UserModel(
-                                    id = result?.id,
-                                    name = nameInput,
-                                    area = areaInput,
-                                    email = emailInput,
-                                    phone = phoneInput
-                                )
-                            )
-                        } else {
-                            // Sign in
-                            supabase.auth.signInWith(Email) {
-                                email = emailInput
-                                password = passwordInput
+                if (isSignUp) {
+                    authViewModel.signUp(
+                        email = emailInput,
+                        password = passwordInput,
+                        name = nameInput,
+                        area = areaInput,
+                        phone = phoneInput,
+                        onSuccess = {
+                            navController.navigate("productFeed") {
+                                popUpTo("login") { inclusive = true }
                             }
                         }
-                        navController.navigate("productFeed") {
-                            popUpTo("login") { inclusive = true }
+                    )
+                } else {
+                    authViewModel.signIn(
+                        email = emailInput,
+                        password = passwordInput,
+                        onSuccess = {
+                            navController.navigate("productFeed") {
+                                popUpTo("login") { inclusive = true }
+                            }
                         }
-                    } catch (e: Exception) {
-                        errorMessage = e.message ?: defaultErrorMessage
-                    }
-                    isLoading = false
+                    )
                 }
             },
             modifier = Modifier.fillMaxWidth(),
-            enabled = !isLoading
+            enabled = !authUiState.isLoading
         ) {
-            if (isLoading) {
+            if (authUiState.isLoading) {
                 CircularProgressIndicator(
                     modifier = Modifier.size(20.dp),
                     color = MaterialTheme.colorScheme.onPrimary
@@ -163,7 +151,10 @@ fun LoginScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        TextButton(onClick = { isSignUp = !isSignUp }) {
+        TextButton(
+            onClick = { isSignUp = !isSignUp },
+            enabled = !authUiState.isLoading
+        ) {
             Text(if (isSignUp) stringResource(R.string.msg_already_have_account) else stringResource(R.string.msg_first_time))
         }
     }
