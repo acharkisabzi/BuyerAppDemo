@@ -6,6 +6,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -15,6 +16,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.buyerappdemo.R
+import com.example.buyerappdemo.ui.theme.DError
+import com.example.buyerappdemo.ui.theme.DSurface
 import com.example.buyerappdemo.viewmodels.AuthViewModel
 
 @Composable
@@ -43,7 +46,7 @@ fun LoginScreen(navController: NavController) {
         )
         Text(
             text = stringResource(R.string.login_subtitle),
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = MaterialTheme.colorScheme.onSecondary
         )
 
         Spacer(modifier = Modifier.height(40.dp))
@@ -63,7 +66,17 @@ fun LoginScreen(navController: NavController) {
                 onValueChange = { areaInput = it },
                 label = { Text(stringResource(R.string.label_area)) },
                 modifier = Modifier.fillMaxWidth(),
-                enabled = !authUiState.isLoading
+                enabled = !authUiState.isLoading,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color.Blue,
+                    unfocusedBorderColor = Color.Gray,
+                    focusedLabelColor = Color.Blue,
+                    unfocusedLabelColor = Color.DarkGray,
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black,   // <-- this is the fix
+                    cursorColor = Color.Blue,
+                    disabledTextColor = Color.Black,  // add this
+                )
             )
             Spacer(modifier = Modifier.height(12.dp))
         }

@@ -149,13 +149,13 @@ fun ViewProductScreen(navController: NavController, productModel: ProductModel) 
                 Spacer(Modifier.height(8.dp))
                 Button(
                     onClick = {navController.navigateUp()},
-                    colors = ButtonDefaults.buttonColors(),
+                    colors = ButtonDefaults.buttonColors(containerColor = DSecondary,
+                        contentColor = ADAtSurfaceLowest),
                     modifier = Modifier.fillMaxWidth()
                 ){
                     Text(
                         text = "Go back",
                         fontWeight = FontWeight.SemiBold,
-                        color = Color.White
                     )
                 }
             }
