@@ -21,4 +21,8 @@
     <string name="status_in_stock">In stock</string>
     <string name="status_out_of_stock">Out of stock</string>
     <string name="price_format">₹%1$d</string>
+    <string name="products_will_be_available_soon">Products will be available when shops around you post them.</string>
+    <string name="status_out_stock">Out of stock</string>
+    <string name="desc_back">back to home</string>
+    <string name="desc_product_photo">Product Photo</string>
 </resources>
