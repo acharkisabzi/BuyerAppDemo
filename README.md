@@ -32,11 +32,11 @@ An Android app that lets buyers browse and view products listed by local sellers
 
 ## Features
 
-- **Sign in / Sign up** — Email and password authentication with persistent session (no re-login on relaunch)
-- **Product feed** — 2-column grid of all available products from local sellers, with images, prices, and stock status
-- **Sort** — Sort products by price, area, shop name, or product name
-- **Product detail** — Full product view with image, price, seller name, and area
-- **Live backend** — All data is real-time via Supabase; products added in the Seller app appear instantly here
+- **Sign in / Sign up** - Email and password authentication with persistent session (no re-login on relaunch)
+- **Product feed** - 2-column grid of all available products from local sellers, with images, prices, and stock status
+- **Sort** - Sort products by price, area, shop name, or product name
+- **Product detail** - Full product view with image, price, seller name, and area
+- **Live backend** - All data is real-time via Supabase; products added in the Seller app appear instantly here
 
 ## Tech Stack
 
@@ -65,7 +65,7 @@ LoginScreen / ProductFeedScreen / ViewProductScreen
 
 - **UI state** is modelled as immutable data classes (`AuthUiState`, `ProductFeedUiState`)
 - **StateFlow** exposes state from ViewModels; screens collect it with `collectAsState()`
-- **Navigation** uses Compose Navigation — `ProductModel` is passed as a type-safe route object directly to `ViewProductScreen`
+- **Navigation** uses Compose Navigation - `ProductModel` is passed as a type-safe route object directly to `ViewProductScreen`
 - **Session persistence** is handled by `SettingsSessionManager` so users stay logged in across app restarts
 
 ## Setup
@@ -116,4 +116,4 @@ You'll need two tables:
 
 ## Related
 
-- **[SellerAppDemo](https://github.com/acharkisabzi/SellerAppDemo)** — the companion seller-side app where shops add and manage their product listings
+- **[SellerAppDemo](https://github.com/acharkisabzi/SellerAppDemo)** - the companion seller-side app where shops add and manage their product listings
