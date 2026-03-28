@@ -152,11 +152,79 @@ fun ViewProductScreen(navController: NavController, productModel: ProductModel) 
                     colors = ButtonDefaults.buttonColors(containerColor = DSecondary,
                         contentColor = ADAtSurfaceLowest),
                     modifier = Modifier.fillMaxWidth()
-                ){
-                    Text(
-                        text = "Go back",
-                        fontWeight = FontWeight.SemiBold,
-                    )
+                ) {
+                    if (!state.value.showDialog) {
+                        Text(
+                            text = "Contact shop",
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color.White
+                        )
+                        Spacer(modifier = Modifier.width(5.dp))
+                        Icon(
+                            imageVector = Icons.Default.Phone,
+                            contentDescription = "Contact shop"
+                        )
+                    } else {
+                        viewModel.getShopInfo(productModel)
+                        ModalBottomSheet(onDismissRequest = { viewModel.dialog(false) },
+                            containerColor = ADAtSecContainer) {
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(200.dp)
+                                    .padding(16.dp),
+                                shape = RoundedCornerShape(16.dp),
+                                colors = CardDefaults.cardColors(ADAtErrContainer)
+                            ) {
+
+                                Row(
+                                    modifier = Modifier.clickable(
+                                        interactionSource = remember { MutableInteractionSource() },
+                                        indication = null,
+                                        enabled = true,
+                                        onClick = {
+                                            viewModel.copyToClipboard("Phone number", state.value.shop.phone, clipboard)
+                                        }
+                                    )
+                                        .padding(8.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Phone,
+                                        contentDescription = "Phone number",
+                                        modifier = Modifier.padding(5.dp),
+                                        tint = Color.Black
+                                    )
+                                    Text(
+                                        text = state.value.shop.phone,
+                                        modifier = Modifier.padding(5.dp)
+                                    )
+                                }
+                                Row(
+                                    modifier = Modifier.clickable(
+                                        interactionSource = remember { MutableInteractionSource() },
+                                        indication = null,
+                                        enabled = true,
+                                        onClick = {
+                                            viewModel.copyToClipboard("Phone number", state.value.shop.phone, clipboard)
+                                        }
+                                    )
+                                        .padding(8.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.MailOutline,
+                                        contentDescription = "Email i d",
+                                        modifier = Modifier.padding(5.dp),
+                                        tint = Color.Black
+                                    )
+                                    Text(
+                                        text = state.value.shop.email,
+                                        modifier = Modifier.padding(5.dp)
+                                    )
+                                }
+
+                            }
+                        }
+                    }
                 }
             }
         }
