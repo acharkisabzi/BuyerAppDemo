@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.fromColorLong
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -45,7 +46,7 @@ fun ProductFeedScreen(navController: NavController) {
     val productFeedUiState by productFeedViewModel.uiState.collectAsState()
     var expanded: Boolean by remember { mutableStateOf(false) }
 
-    Scaffold { innerPadding ->
+    Scaffold(containerColor = MaterialTheme.colorScheme.tertiaryContainer) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -93,8 +94,8 @@ fun ProductFeedScreen(navController: NavController) {
 
                 Text(
                     text = "BuyerAppDemo",
-                    modifier = Modifier.weight(1.3f),
-                    style =MaterialTheme.typography.headlineSmall,
+                    modifier = Modifier.weight(1.5f),
+                    style =MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.W900,
                     letterSpacing = (-0.5).sp,
                     textAlign = TextAlign.Center
@@ -324,6 +325,7 @@ private fun AtelierProductCard(
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     fontSize = 14.sp,
+                    color = Color(0xF88668F6)
                 )
                 // Stock badge — tonal, no hard border
                 Box(
