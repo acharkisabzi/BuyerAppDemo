@@ -291,6 +291,7 @@ private fun AtelierProductCard(
                 onClickLabel = "Edit ${product.name}",
                 onClick = { navController.navigate(product) }
             ),
+        colors = CardDefaults.cardColors(Color.White)
     ) {
         // Product image — 1:1 aspect ratio
         AsyncImage(
