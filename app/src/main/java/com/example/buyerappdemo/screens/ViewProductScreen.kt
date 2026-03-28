@@ -138,7 +138,7 @@ fun ViewProductScreen(
                         fontWeight = FontWeight.ExtraBold
                     )
                 }
-                Spacer(Modifier.height(1.dp))
+                Spacer(Modifier.height(8.dp))
                 Row {
                     Text(
                         text = "Sold by: ",
