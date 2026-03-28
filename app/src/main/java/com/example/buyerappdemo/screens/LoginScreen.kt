@@ -8,7 +8,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
@@ -16,8 +15,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.buyerappdemo.R
-import com.example.buyerappdemo.ui.theme.DError
-import com.example.buyerappdemo.ui.theme.DSurface
 import com.example.buyerappdemo.viewmodels.AuthViewModel
 
 @Composable
@@ -41,12 +38,12 @@ fun LoginScreen(navController: NavController) {
     ) {
         Text(
             text = stringResource(R.string.login_title),
-            fontSize = 32.sp,
-            fontWeight = FontWeight.Bold
+            style = MaterialTheme.typography.displayLarge
         )
         Text(
             text = stringResource(R.string.login_subtitle),
-            color = MaterialTheme.colorScheme.onSecondary
+            style = MaterialTheme.typography.headlineSmall
+
         )
 
         Spacer(modifier = Modifier.height(40.dp))
@@ -86,16 +83,6 @@ fun LoginScreen(navController: NavController) {
             onValueChange = { emailInput = it },
             label = { Text(stringResource(R.string.label_email)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-            modifier = Modifier.fillMaxWidth(),
-            enabled = !authUiState.isLoading
-        )
-        Spacer(modifier = Modifier.height(12.dp))
-
-        OutlinedTextField(
-            value = phoneInput,
-            onValueChange = { phoneInput = it },
-            label = { Text(stringResource(R.string.label_phone)) },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
             modifier = Modifier.fillMaxWidth(),
             enabled = !authUiState.isLoading
         )
@@ -158,7 +145,8 @@ fun LoginScreen(navController: NavController) {
                     color = MaterialTheme.colorScheme.onPrimary
                 )
             } else {
-                Text(if (isSignUp) stringResource(R.string.btn_create_account) else stringResource(R.string.btn_sign_in))
+                Text(if (isSignUp) stringResource(R.string.btn_create_account) else stringResource(R.string.btn_sign_in),
+                    style = MaterialTheme.typography.labelLarge)
             }
         }
 

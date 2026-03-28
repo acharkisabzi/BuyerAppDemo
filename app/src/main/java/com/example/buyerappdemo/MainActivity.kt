@@ -4,9 +4,13 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.core.EaseInCubic
+import androidx.compose.animation.core.EaseOutCubic
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
@@ -17,19 +21,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import androidx.navigation.toRoute
 import com.example.buyerappdemo.models.ProductModel
+import com.example.buyerappdemo.screens.ImageViewScreen
 import com.example.buyerappdemo.screens.LoginScreen
 import com.example.buyerappdemo.screens.ProductFeedScreen
 import com.example.buyerappdemo.screens.ViewProductScreen
-import com.example.buyerappdemo.supabase.supabase
-import com.example.buyerappdemo.ui.theme.ADAtSecondary
-import com.example.buyerappdemo.ui.theme.BuyerAppDemoTheme
+import com.example.buyerappdemo.ui.theme.AppTheme
 import com.example.buyerappdemo.viewmodels.AuthViewModel
-import io.github.jan.supabase.auth.auth
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,7 +44,7 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
-            BuyerAppDemoTheme {
+            AppTheme {
                 AppScreen(Modifier.fillMaxSize())
             }
         }
@@ -57,7 +61,7 @@ fun AppScreen(modifier: Modifier) {
     if (authUiState.isAuthenticated == null) {
         // Show a simple loading screen so Login doesn't "flash"
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator(color = ADAtSecondary)
+            CircularProgressIndicator()
         }
     } else {
         NavHost(
@@ -97,7 +101,7 @@ fun AppScreen(modifier: Modifier) {
 @Preview
 @Composable
 fun GreetingPreview() {
-    BuyerAppDemoTheme {
+    AppTheme {
         AppScreen(Modifier.fillMaxSize())
     }
 }

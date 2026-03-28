@@ -2,13 +2,11 @@ package com.example.buyerappdemo.screens
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import com.example.buyerappdemo.ui.theme.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.rememberScrollState
@@ -26,8 +24,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -46,14 +45,10 @@ fun ProductFeedScreen(navController: NavController) {
     val productFeedUiState by productFeedViewModel.uiState.collectAsState()
     var expanded: Boolean by remember { mutableStateOf(false) }
 
-    Scaffold(
-        containerColor = DSurface,
-        modifier = Modifier.background(DSecondaryContainer)
-    ) { innerPadding ->
+    Scaffold { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(DSecondaryContainer)
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
         ) {
@@ -62,13 +57,13 @@ fun ProductFeedScreen(navController: NavController) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding( vertical = 17.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly,
+                    .padding(vertical = 17.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
 
                 // Subtle sign-out link
                 TextButton(
+                    modifier = Modifier.weight(0.9f),
                     onClick = {
                         authViewModel.signOut {
                             navController.navigate("login") {
@@ -82,14 +77,14 @@ fun ProductFeedScreen(navController: NavController) {
                         modifier = Modifier
                             .size(height = 30.dp, width = 70.dp)
                             .clip(shape = RoundedCornerShape(100.dp))
-                            .background(ADAtErrContainer),
+                            .background(MaterialTheme.colorScheme.onErrorContainer),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = stringResource(R.string.btn_sign_out),
                             modifier = Modifier,
-                            color = DError,
-                            fontSize = 13.sp,
+                            color = MaterialTheme.colorScheme.onError,
+                            style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.Bold
                         )
                     }
@@ -98,13 +93,17 @@ fun ProductFeedScreen(navController: NavController) {
 
                 Text(
                     text = "BuyerAppDemo",
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = DOnSurface,
-                    letterSpacing = (-0.5).sp
+                    modifier = Modifier.weight(1.3f),
+                    style =MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.W900,
+                    letterSpacing = (-0.5).sp,
+                    textAlign = TextAlign.Center
                 )
 
-                IconButton(onClick = { expanded = !expanded }) {
+                IconButton(
+                    onClick = { expanded = !expanded },
+                    modifier = Modifier.weight(0.9f),
+                ) {
                     Icon(
                         Icons.Default.MoreVert,
                         contentDescription = "More options",
@@ -114,12 +113,17 @@ fun ProductFeedScreen(navController: NavController) {
                         expanded = expanded,
                         onDismissRequest = { expanded = false },
                         modifier = Modifier.animateContentSize(
-                            animationSpec = spring(dampingRatio = Spring.DampingRatioHighBouncy, stiffness = Spring.StiffnessLow)
-                        )
-                        ) {
+                            animationSpec = spring(
+                                dampingRatio = Spring.DampingRatioHighBouncy,
+                                stiffness = Spring.StiffnessLow
+                            )
+                        ),
+                        offset = DpOffset((-20).dp, 0.dp)
+                    ) {
                         Text(
                             text = "Sort by",
-                            fontSize = 15.sp,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
                             modifier = Modifier.padding(start = 10.dp)
                         )
                         DropdownMenuItem(
@@ -183,13 +187,11 @@ private fun CollectionSection(
             text = "Available products",
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            color = DOnSurface,
             letterSpacing = (-0.3).sp
         )
         Text(
             text = "${products.size} items",
             fontSize = 13.sp,
-            color = DOutline,
             fontWeight = FontWeight.Medium
         )
     }
@@ -205,7 +207,6 @@ private fun CollectionSection(
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator(
-                    color = DSecondary,
                     strokeWidth = 2.dp,
                     modifier = Modifier.size(32.dp)
                 )
@@ -219,7 +220,6 @@ private fun CollectionSection(
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp)
                     .clip(RoundedCornerShape(16.dp))
-                    .background(DSurfaceContainerLow)
                     .padding(vertical = 56.dp),
                 contentAlignment = Alignment.Center
             ) {
@@ -227,14 +227,12 @@ private fun CollectionSection(
                     Text(
                         text = stringResource(R.string.msg_no_products),
                         fontSize = 17.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = DOnSurface
+                        fontWeight = FontWeight.SemiBold
                     )
                     Spacer(modifier = Modifier.height(6.dp))
                     Text(
                         text = stringResource(R.string.products_will_be_available_soon),
-                        fontSize = 14.sp,
-                        color = DOnSurfaceVariant
+                        fontSize = 14.sp
                     )
                 }
             }
@@ -281,17 +279,13 @@ private fun AtelierProductCard(
 ) {
     Card(
         modifier = modifier
-            .clip(RoundedCornerShape(12.dp))
-            .background(DSurfaceContainerLowest)
-            // Ambient shadow — feels architectural, not stamped
             .shadow(
                 elevation = 2.dp,
-                shape = RoundedCornerShape(12.dp),
-                ambientColor = DOnSurface.copy(alpha = 0.04f),
-                spotColor = DOnSurface.copy(alpha = 0.04f)
+                shape = RoundedCornerShape(12.dp)
             )
+            .clip(RoundedCornerShape(12.dp))
             .clickable(
-                interactionSource = MutableInteractionSource(),
+                interactionSource = remember { MutableInteractionSource() },
                 indication = null,
                 enabled = true,
                 onClickLabel = "Edit ${product.name}",
@@ -313,9 +307,8 @@ private fun AtelierProductCard(
         Column(modifier = Modifier.padding(12.dp)) {
             Text(
                 text = product.name,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 14.sp,
-                color = DOnSurface,
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.titleMedium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -327,9 +320,9 @@ private fun AtelierProductCard(
             ) {
                 Text(
                     text = stringResource(R.string.price_format, product.price.toInt()),
+                    style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     fontSize = 14.sp,
-                    color = DSecondary
                 )
                 // Stock badge — tonal, no hard border
                 Box(
@@ -337,7 +330,7 @@ private fun AtelierProductCard(
                         .clip(RoundedCornerShape(999.dp))
                         .background(
                             if (product.inStock)
-                                DSecondaryContainer
+                                MaterialTheme.colorScheme.secondaryContainer
                             else
                                 Color(0xFFFFE0E0)
                         )
@@ -348,9 +341,10 @@ private fun AtelierProductCard(
                             stringResource(R.string.status_in_stock)
                         else
                             stringResource(R.string.status_out_stock),
+                        style = MaterialTheme.typography.labelSmall,
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Bold,
-                        color = if (product.inStock) DSecondary else DError,
+                        color = if (product.inStock) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error,
                         letterSpacing = 0.3.sp
                     )
                 }
