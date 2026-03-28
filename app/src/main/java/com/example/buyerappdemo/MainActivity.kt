@@ -64,8 +64,18 @@ fun AppScreen(modifier: Modifier) {
             navController = navController,
             // Set startDestination based on login status
             startDestination = if (authUiState.isAuthenticated == true) "productFeed" else "login",
-            enterTransition = { fadeIn(animationSpec = tween(700)) },
-            exitTransition = { fadeOut(animationSpec = tween(700)) }
+            enterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(350, easing = EaseOutCubic)
+                ) + fadeIn(animationSpec = tween(350))
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { -it },
+                    animationSpec = tween(350, easing = EaseInCubic)
+                ) + fadeOut(animationSpec = tween(350))
+            }
         ) {
             composable(route = "login") { LoginScreen(navController = navController) }
             composable(route = "productFeed") { ProductFeedScreen(navController = navController) }
