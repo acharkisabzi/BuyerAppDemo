@@ -279,7 +279,7 @@ private fun AtelierProductCard(
     modifier: Modifier = Modifier,
     navController: NavController
 ) {
-    Column(
+    Card(
         modifier = modifier
             .clip(RoundedCornerShape(12.dp))
             .background(DSurfaceContainerLowest)
