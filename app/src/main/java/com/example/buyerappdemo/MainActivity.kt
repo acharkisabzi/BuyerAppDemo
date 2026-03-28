@@ -83,6 +83,13 @@ fun AppScreen(modifier: Modifier) {
                 val product: ProductModel = backStackEntry.toRoute<ProductModel>()
                 ViewProductScreen(navController = navController, productModel = product)
             }
+            composable(
+                route = "ImageViewScreen/{imageUrl}", arguments = listOf(
+                navArgument("imageUrl") { type = NavType.StringType }
+            )) { backStackEntry ->
+                val imageUrl = backStackEntry.arguments?.getString("imageUrl") ?: ""
+                ImageViewScreen(navController = navController, imageUrl = imageUrl)
+            }
         }
     }
 }
