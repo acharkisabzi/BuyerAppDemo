@@ -12,8 +12,14 @@ import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.providers.builtin.Email
 import io.github.jan.supabase.postgrest.postgrest
 
-data class AuthUiState(
-    val isAuthenticated: Boolean? = null,
+data class AuthState(
+    val nameInput: String = "",
+    val emailInput: String = "",
+    val phoneInput: String = "",
+    val passwordInput: String = "",
+    val usernameInput: String = "",
+    val areaInput: String = "",
+    val isSignUp: Boolean = false,
     val isLoading: Boolean = false,
     val errorMessage: String = ""
 )
