@@ -111,30 +111,12 @@ fun LoginScreen(navController: NavController) {
 
         Button(
             onClick = {
-                if (isSignUp) {
-                    authViewModel.signUp(
-                        email = emailInput,
-                        password = passwordInput,
-                        name = nameInput,
-                        area = areaInput,
-                        phone = phoneInput,
-                        onSuccess = {
-                            navController.navigate("productFeed") {
-                                popUpTo("login") { inclusive = true }
-                            }
+                    authViewModel.authorize()
+                    if(authUiState.isAuthenticated == true){
+                        navController.navigate("productFeed") {
+                            popUpTo("login") { inclusive = true }
                         }
-                    )
-                } else {
-                    authViewModel.signIn(
-                        email = emailInput,
-                        password = passwordInput,
-                        onSuccess = {
-                            navController.navigate("productFeed") {
-                                popUpTo("login") { inclusive = true }
-                            }
-                        }
-                    )
-                }
+                    }
             },
             modifier = Modifier.fillMaxWidth(),
             enabled = !authUiState.isLoading
