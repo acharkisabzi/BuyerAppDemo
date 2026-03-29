@@ -74,7 +74,7 @@ class ProductFeedViewModel : ViewModel() {
             try{
                 val result = supabase.postgrest["users"]
                     .select {
-                        filter { eq("shop_name", product.shopName) }
+                        filter { eq("id", product.shopId) }
                     }
                 val shop = result.decodeSingle<ShopModel>()
                 _uiState.update { currentState ->
