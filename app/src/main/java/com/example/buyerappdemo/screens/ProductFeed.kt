@@ -21,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.fromColorLong
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -66,10 +65,9 @@ fun ProductFeedScreen(navController: NavController) {
                 TextButton(
                     modifier = Modifier.weight(0.9f),
                     onClick = {
-                        authViewModel.signOut {
-                            navController.navigate("login") {
-                                popUpTo("productFeed") { inclusive = true }
-                            }
+                        authViewModel.signOut()
+                        navController.navigate("login") {
+                            popUpTo("productFeed") { inclusive = true }
                         }
                     },
                     contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp)
@@ -289,7 +287,7 @@ private fun AtelierProductCard(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null,
                 enabled = true,
-                onClickLabel = "Edit ${product.name}",
+                onClickLabel = "Edit ${product.productName}",
                 onClick = { navController.navigate(product) }
             ),
         colors = CardDefaults.cardColors(Color.White)
@@ -297,7 +295,7 @@ private fun AtelierProductCard(
         // Product image — 1:1 aspect ratio
         AsyncImage(
             model = product.imageUrl,
-            contentDescription = product.name,
+            contentDescription = product.productName,
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(1f)
@@ -308,7 +306,7 @@ private fun AtelierProductCard(
         // Product info
         Column(modifier = Modifier.padding(12.dp)) {
             Text(
-                text = product.name,
+                text = product.productName,
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.titleMedium,
                 maxLines = 1,

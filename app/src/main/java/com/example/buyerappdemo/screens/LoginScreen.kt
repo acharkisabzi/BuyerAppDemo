@@ -22,13 +22,6 @@ fun LoginScreen(navController: NavController) {
     val authViewModel: AuthViewModel = viewModel()
     val authUiState by authViewModel.uiState.collectAsState()
 
-    var emailInput by remember { mutableStateOf("") }
-    var phoneInput by remember { mutableStateOf("") }
-    var passwordInput by remember { mutableStateOf("") }
-    var nameInput by remember { mutableStateOf("") }
-    var areaInput by remember { mutableStateOf("") }
-    var isSignUp by remember { mutableStateOf(false) }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -49,18 +42,18 @@ fun LoginScreen(navController: NavController) {
         Spacer(modifier = Modifier.height(40.dp))
 
         // Extra fields for sign up
-        if (isSignUp) {
+        if (authUiState.isSignUp) {
             OutlinedTextField(
-                value = nameInput,
-                onValueChange = { nameInput = it },
+                value = authUiState.nameInput,
+                onValueChange = { authViewModel.updateName(it) },
                 label = { Text(stringResource(R.string.label_name)) },
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !authUiState.isLoading
             )
             Spacer(modifier = Modifier.height(12.dp))
             OutlinedTextField(
-                value = areaInput,
-                onValueChange = { areaInput = it },
+                value = authUiState.areaInput,
+                onValueChange = { authViewModel.updateArea(it)},
                 label = { Text(stringResource(R.string.label_area)) },
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !authUiState.isLoading,
@@ -79,8 +72,8 @@ fun LoginScreen(navController: NavController) {
         }
 
         OutlinedTextField(
-            value = emailInput,
-            onValueChange = { emailInput = it },
+            value = authUiState.emailInput,
+            onValueChange = {authViewModel.updateEmail(it)},
             label = { Text(stringResource(R.string.label_email)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             modifier = Modifier.fillMaxWidth(),
@@ -89,8 +82,8 @@ fun LoginScreen(navController: NavController) {
         Spacer(modifier = Modifier.height(12.dp))
 
         OutlinedTextField(
-            value = passwordInput,
-            onValueChange = { passwordInput = it },
+            value = authUiState.passwordInput,
+            onValueChange = { authViewModel.updatePassword(it)},
             label = { Text(stringResource(R.string.label_password)) },
             visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -127,18 +120,17 @@ fun LoginScreen(navController: NavController) {
                     color = MaterialTheme.colorScheme.onPrimary
                 )
             } else {
-                Text(if (isSignUp) stringResource(R.string.btn_create_account) else stringResource(R.string.btn_sign_in),
+                Text(if (authUiState.isSignUp) stringResource(R.string.btn_create_account) else stringResource(R.string.btn_sign_in),
                     style = MaterialTheme.typography.labelLarge)
             }
         }
-
         Spacer(modifier = Modifier.height(12.dp))
 
         TextButton(
-            onClick = { isSignUp = !isSignUp },
+            onClick = {authViewModel.updateSignUp(!authUiState.isSignUp)},
             enabled = !authUiState.isLoading
         ) {
-            Text(if (isSignUp) stringResource(R.string.msg_already_have_account) else stringResource(R.string.msg_first_time))
+            Text(if (authUiState.isSignUp) stringResource(R.string.msg_already_have_account) else stringResource(R.string.msg_first_time))
         }
     }
 }

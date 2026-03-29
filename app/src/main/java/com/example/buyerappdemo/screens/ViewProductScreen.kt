@@ -41,7 +41,7 @@ fun ViewProductScreen(
     val state = viewModel.uiState.collectAsState()
     val clipboard = LocalClipboard.current
     val imageUri by remember { mutableStateOf<Uri?>(productModel.imageUrl.toUri()) }
-    val productName by remember { mutableStateOf(productModel.name) }
+    val productName by remember { mutableStateOf(productModel.productName) }
     val productPrice by remember { mutableStateOf(productModel.price) }
     val productShopName = productModel.shopName
     val productShopArea = productModel.area

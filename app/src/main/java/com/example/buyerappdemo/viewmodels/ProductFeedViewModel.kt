@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import com.example.buyerappdemo.models.ProductModel
-import com.example.buyerappdemo.models.ShopModel
 import com.example.buyerappdemo.models.UserModel
 import com.example.buyerappdemo.supabase.supabase
 import io.github.jan.supabase.postgrest.postgrest
@@ -23,7 +22,7 @@ data class ProductFeedUiState(
     val isLoading: Boolean = true,
     val errorMessage: String = "",
     val sortBy: String = "price",
-    val shop: ShopModel = ShopModel(),
+    val shop: UserModel = UserModel(),
     val showDialog: Boolean = false
 )
 
@@ -76,7 +75,7 @@ class ProductFeedViewModel : ViewModel() {
                     .select {
                         filter { eq("id", product.shopId) }
                     }
-                val shop = result.decodeSingle<ShopModel>()
+                val shop = result.decodeSingle<UserModel>()
                 _uiState.update { currentState ->
                     currentState.copy(shop = shop)
                 }

@@ -1,16 +1,19 @@
 package com.example.buyerappdemo.viewmodels
 
+import android.util.Log
+import io.github.jan.supabase.auth.user.UserSession
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 import com.example.buyerappdemo.models.UserModel
 import com.example.buyerappdemo.supabase.supabase
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.providers.builtin.Email
 import io.github.jan.supabase.postgrest.postgrest
+import io.github.jan.supabase.postgrest.rpc
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 data class AuthState(
     val nameInput: String = "",
@@ -21,15 +24,21 @@ data class AuthState(
     val areaInput: String = "",
     val isSignUp: Boolean = false,
     val isLoading: Boolean = false,
-    val errorMessage: String = ""
+    val errorMessage: String = "",
+    val isAuthenticated: Boolean? = null,
+    val genericError: String = "Something went wrong",
+    val session: UserSession? = null
 )
 
 class AuthViewModel : ViewModel() {
-    private val _uiState = MutableStateFlow(AuthUiState())
-    val uiState: StateFlow<AuthUiState> = _uiState.asStateFlow()
+
+    private val _uiState = MutableStateFlow(AuthState())
+    val uiState = _uiState.asStateFlow()
 
     init {
-        checkAuthStatus()
+        val currentSession = supabase.auth.currentSessionOrNull()
+        updateSession(currentSession)
+        updateAuthenticated(currentSession != null)
     }
 
     fun updateName(name: String) {
@@ -74,47 +83,45 @@ class AuthViewModel : ViewModel() {
 
     fun signOut() {
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true)
             try {
-                val session = supabase.auth.currentSessionOrNull()
-                _uiState.value = _uiState.value.copy(
-                    isAuthenticated = session != null,
-                    isLoading = false
-                )
+                updateLoading(true)
+                supabase.auth.signOut()
+                updateAuthenticated(false)
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        session = null,
+                        isAuthenticated = false,
+                        emailInput = "",
+                        passwordInput = "",
+                        errorMessage = ""
+                    )
+                }
             } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    errorMessage = e.message ?: "Failed to check auth status"
-                )
+                updateAuthenticated(false)
+                updateSession(null)
+            } finally {
+                updateLoading(false)
             }
         }
     }
 
-    fun signUp(
-        email: String,
-        password: String,
-        name: String,
-        area: String,
-        phone: String,
-        onSuccess: () -> Unit
-    ) {
+    fun authorize() {
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = "")
+            updateLoading(true)
+            updateError("")
             try {
                 val exists = checkUserExists(_uiState.value.emailInput)
                 if (_uiState.value.isSignUp) {
                     // Sign up
-                    if(!exists){
+                    if (!exists) {
                         signUp(_uiState.value.emailInput, _uiState.value.passwordInput)
                     } else {
                         updateError("User already exists")
+                        return@launch
                     }
                 } else {
                     // Sign in
-                    supabase.auth.signInWith(Email) {
-                        email = _uiState.value.emailInput
-                        password = _uiState.value.passwordInput
-                    }
+                    signIn(_uiState.value.emailInput, _uiState.value.passwordInput)
                 }
                 val currentSession = supabase.auth.currentSessionOrNull()
                 updateSession(currentSession)
