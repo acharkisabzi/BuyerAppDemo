@@ -120,10 +120,25 @@ class AuthViewModel : ViewModel() {
                 updateSession(currentSession)
                 updateAuthenticated(currentSession != null)
             } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(
-                    errorMessage = e.message ?: "Sign out failed"
-                )
+                Log.d("AuthViewModel", e.toString())
+                updateError("Error signing in")
+            } finally {
+                updateLoading(false)
             }
+        }
+    }
+
+    private suspend fun checkUserExists(email: String): Boolean {
+        return supabase.postgrest.rpc(
+            function = "check_user_exists",
+            parameters = mapOf("email_input" to email)
+        ).decodeAs<Boolean>()
+    }
+
+    private suspend fun signIn(emailIn: String, passwordIn: String) {
+        supabase.auth.signInWith(Email) {
+            email = emailIn
+            password = passwordIn
         }
     }
 
