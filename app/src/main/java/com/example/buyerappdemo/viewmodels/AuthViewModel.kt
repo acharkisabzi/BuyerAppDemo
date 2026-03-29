@@ -142,7 +142,21 @@ class AuthViewModel : ViewModel() {
         }
     }
 
-    fun clearError() {
-        _uiState.value = _uiState.value.copy(errorMessage = "")
+    private suspend fun signUp(emailIn: String, passwordIn: String) {
+        val result = supabase.auth.signUpWith(Email) {
+            email = emailIn
+            password = passwordIn
+        }
+        supabase.postgrest["users"].insert(
+            UserModel(
+                id = result?.id,
+                name = _uiState.value.nameInput,
+                username = _uiState.value.usernameInput,
+                area = _uiState.value.areaInput,
+                email = _uiState.value.emailInput,
+                phone = _uiState.value.phoneInput,
+                isShop = false
+            )
+        )
     }
 }
