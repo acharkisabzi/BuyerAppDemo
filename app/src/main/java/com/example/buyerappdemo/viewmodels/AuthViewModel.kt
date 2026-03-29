@@ -32,7 +32,47 @@ class AuthViewModel : ViewModel() {
         checkAuthStatus()
     }
 
-    fun checkAuthStatus() {
+    fun updateName(name: String) {
+        _uiState.update { it.copy(nameInput = name) }
+    }
+
+    fun updateEmail(email: String) {
+        _uiState.update { it.copy(emailInput = email) }
+    }
+
+    fun updatePassword(password: String) {
+        _uiState.update { it.copy(passwordInput = password) }
+    }
+
+    fun updateArea(area: String) {
+        _uiState.update { it.copy(areaInput = area) }
+    }
+
+    fun updateUserName(userName: String) {
+        _uiState.update { it.copy(usernameInput = userName) }
+    }
+
+    fun updateLoading(isLoading: Boolean) {
+        _uiState.update { it.copy(isLoading = isLoading) }
+    }
+
+    fun updateSignUp(isSignUp: Boolean) {
+        _uiState.update { it.copy(isSignUp = isSignUp) }
+    }
+
+    fun updateAuthenticated(isAuthenticated: Boolean) {
+        _uiState.update { it.copy(isAuthenticated = isAuthenticated) }
+    }
+
+    fun updateSession(session: UserSession?) {
+        _uiState.update { it.copy(session = session) }
+    }
+
+    fun updateError(error: String) {
+        _uiState.update { it.copy(errorMessage = error) }
+    }
+
+    fun signOut() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
             try {
