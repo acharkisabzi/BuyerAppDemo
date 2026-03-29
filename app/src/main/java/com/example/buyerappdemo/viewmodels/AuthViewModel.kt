@@ -55,70 +55,24 @@ class AuthViewModel : ViewModel() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = "")
             try {
-                // Sign up
-                val result = supabase.auth.signUpWith(Email) {
-                    this.email = email
-                    this.password = password
+                val exists = checkUserExists(_uiState.value.emailInput)
+                if (_uiState.value.isSignUp) {
+                    // Sign up
+                    if(!exists){
+                        signUp(_uiState.value.emailInput, _uiState.value.passwordInput)
+                    } else {
+                        updateError("User already exists")
+                    }
+                } else {
+                    // Sign in
+                    supabase.auth.signInWith(Email) {
+                        email = _uiState.value.emailInput
+                        password = _uiState.value.passwordInput
+                    }
                 }
-
-                // Save buyer profile
-                supabase.postgrest["buyers"].insert(
-                    UserModel(
-                        id = result?.id,
-                        name = name,
-                        area = area,
-                        email = email,
-                        phone = phone
-                    )
-                )
-
-                _uiState.value = _uiState.value.copy(
-                    isAuthenticated = true,
-                    isLoading = false
-                )
-                onSuccess()
-            } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    errorMessage = e.message ?: "Sign up failed"
-                )
-            }
-        }
-    }
-
-    fun signIn(
-        email: String,
-        password: String,
-        onSuccess: () -> Unit
-    ) {
-        viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = "")
-            try {
-                supabase.auth.signInWith(Email) {
-                    this.email = email
-                    this.password = password
-                }
-
-                _uiState.value = _uiState.value.copy(
-                    isAuthenticated = true,
-                    isLoading = false
-                )
-                onSuccess()
-            } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    errorMessage = e.message ?: "Sign in failed"
-                )
-            }
-        }
-    }
-
-    fun signOut(onSuccess: () -> Unit) {
-        viewModelScope.launch {
-            try {
-                supabase.auth.signOut()
-                _uiState.value = _uiState.value.copy(isAuthenticated = false)
-                onSuccess()
+                val currentSession = supabase.auth.currentSessionOrNull()
+                updateSession(currentSession)
+                updateAuthenticated(currentSession != null)
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     errorMessage = e.message ?: "Sign out failed"
