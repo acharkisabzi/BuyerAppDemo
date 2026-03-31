@@ -22,6 +22,14 @@ fun LoginScreen(navController: NavController) {
     val authViewModel: AuthViewModel = viewModel()
     val authUiState by authViewModel.uiState.collectAsState()
 
+    LaunchedEffect(authUiState.isAuthenticated){
+        if(authUiState.isAuthenticated == true){
+            navController.navigate("productFeed") {
+                popUpTo("login") { inclusive = true }
+            }
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
