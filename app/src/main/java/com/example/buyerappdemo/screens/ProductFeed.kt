@@ -149,7 +149,7 @@ fun ProductFeedScreen(navController: NavController) {
                         DropdownMenuItem(
                             text = { Text(text = "Product name") },
                             onClick = {
-                                productFeedViewModel.setSortFilter("name")
+                                productFeedViewModel.setSortFilter("product_name")
                                 expanded = false
                             },
                         )
